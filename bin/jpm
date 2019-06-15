@@ -1,0 +1,5 @@
+#!/usr/bin/env python
+
+import jpm.cli as jpm
+
+print(jpm.main())
