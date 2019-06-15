@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Java Package Manager",
-    version="0.0.1",
+    version="0.0.2",
     author="Author Name",
     author_email="bsquared18@gmail.com",
     description="A small CLI package manager for Java projects using Maven",
