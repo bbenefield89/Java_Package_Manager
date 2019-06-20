@@ -3,9 +3,7 @@ import json
 import os
 import pprint
 import requests
-
-from xml.dom.minidom import parse
-from xml.etree.ElementTree import ElementTree, Element, SubElement
+import xml.etree.ElementTree as ElementTree
 
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -27,26 +25,33 @@ def get_maven_package(package):
     content = json.loads(response.content)['response']['docs']
     for package in content:
         if package['a'] == 'mysql-connector-java':
-            return parse_xml()
+            return add_maven_package(package['g'], package['a'])
 
 
-def parse_xml():
-    xml_tree = ElementTree()
+def add_maven_package(groupId, artifactId):
+    ElementTree.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+    xml_tree = ElementTree.ElementTree()
     xml_tree.parse(f'{current_directory}/pom.xml')
     dependecies_tag = xml_tree.find('{http://maven.apache.org/POM/4.0.0}dependencies')
-    dependency_tags = dependecies_tag.getchildren()
 
-    new_dependency = Element('{http://maven.apache.org/POM/4.0.0}dependency')
+    last_dependency_tag = dependecies_tag.findall('{http://maven.apache.org/POM/4.0.0}dependency')
+    last_dependency_tag[-1].tail = '\n    '
+
+    new_dependency = ElementTree.Element('{http://maven.apache.org/POM/4.0.0}dependency')
+    new_dependency.text = '\n      '
+    new_dependency.tail = '\n  '
     
-    new_group_id = SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}groupId')
-    new_group_id.text = 'groupId'
-
-    new_artifact_id = SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}artifactId')
-    new_artifact_id.text = 'artifactId'
-
+    new_group_id = ElementTree.SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}groupId')
+    new_group_id.text = f'{groupId}'
+    new_group_id.tail = '\n      '
+    
+    new_artifact_id = ElementTree.SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}artifactId')
+    new_artifact_id.text = f'{artifactId}'
+    new_artifact_id.tail = '\n    '
+    
     dependecies_tag.append(new_dependency)
-
-    xml_tree.write(f'{current_directory}/pom2.xml')
+    
+    xml_tree.write(f'{current_directory}/pom.xml', encoding='UTF-8', xml_declaration=True)
 
 
 if __name__ == '__main__':
