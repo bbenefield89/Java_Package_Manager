@@ -6,29 +6,28 @@ import requests
 import xml.etree.ElementTree as ElementTree
 
 
-current_directory = os.path.dirname(os.path.realpath(__file__))
+current_directory = os.getcwd()
 pp = pprint.PrettyPrinter(indent=4)
 
 
 def main():
     for root, dirs, files in os.walk(current_directory):
         if 'pom.xml' in files:
-            return get_maven_package()
-        else:
-            print('Could not find "pom.xml" file')
-
+            get_maven_package()
+            break
+        print('Could not find "pom.xml" file')
 
 @click.command()
-@click.option('--package', prompt='Package Name', help='Enter a valid package name that can be found on the "Maven Repository"')
-def get_maven_package(package):
-    response = requests.get('https://search.maven.org/solrsearch/select?q=mysql-connector-java&wt=json')
-    content = json.loads(response.content)['response']['docs']
-    for package in content:
-        if package['a'] == 'mysql-connector-java':
+@click.option('--package_name', prompt='Package Name', help='Enter a valid package name that can be found on the "Maven Repository"')
+def get_maven_package(package_name):
+    response = requests.get(f'https://search.maven.org/solrsearch/select?q={package_name}&wt=json')
+    packages = json.loads(response.content)['response']['docs']
+    for package in packages:
+        if package['a'] == package_name:
             return add_maven_package(package['g'], package['a'])
 
 
-def add_maven_package(groupId, artifactId):
+def add_maven_package(group_id, artifact_id):
     ElementTree.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
     xml_tree = ElementTree.ElementTree()
     xml_tree.parse(f'{current_directory}/pom.xml')
@@ -42,17 +41,18 @@ def add_maven_package(groupId, artifactId):
     new_dependency.tail = '\n  '
     
     new_group_id = ElementTree.SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}groupId')
-    new_group_id.text = f'{groupId}'
+    new_group_id.text = f'{group_id}'
     new_group_id.tail = '\n      '
     
     new_artifact_id = ElementTree.SubElement(new_dependency, '{http://maven.apache.org/POM/4.0.0}artifactId')
-    new_artifact_id.text = f'{artifactId}'
+    new_artifact_id.text = f'{artifact_id}'
     new_artifact_id.tail = '\n    '
     
     dependecies_tag.append(new_dependency)
     
     xml_tree.write(f'{current_directory}/pom.xml', encoding='UTF-8', xml_declaration=True)
 
+    print(f'\nFinished writing "{group_id}:{artifact_id}" to "pom.xml"\n')
 
 if __name__ == '__main__':
     main()
