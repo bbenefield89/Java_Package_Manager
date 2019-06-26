@@ -1,5 +1,5 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/bbenefield89/express-admin-area/pulls)
-![Version 1.0.0](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg?style=flat-square)
+![Version 1.0.1](https://img.shields.io/badge/Version-1.0.1-brightgreen.svg?style=flat-square)
 ![Python >=3.6](https://img.shields.io/badge/Python->=3.6-brightgreen.svg?style=flat-square)
 
 # JPM (Java Package Manager)
