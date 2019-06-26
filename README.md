@@ -31,7 +31,7 @@ Using **JPM** is as easy as:
 
 ## Contributing
 
-Please refer to this repositories [Contributing.md](https://github.com/bbenefield89/jpm/blob/master/.github/Contributing.md)
+Please refer to this repositories [Contributing.md](https://github.com/bbenefield89/jpm/blob/master/.github/CONTRIBUTING.md)
 
 
 ## Contributers
